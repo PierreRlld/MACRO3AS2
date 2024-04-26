@@ -306,6 +306,8 @@ varobs gy_H_obs ex_F_obs pi_obs;
 % --------------------------------
 % (2) PRIORS SELECTION -----------
 % --------------------------------
+
+% /!\ PAS ENCORE REGARDé SI MODIF NECESSAIRES /!\ 
 estimated_params;
 //	PARAM NAME,		INITVAL,	LB,		UB,		PRIOR_SHAPE,		PRIOR_P1,		PRIOR_P2,		PRIOR_P3,		PRIOR_P4,		JSCALE
 	stderr eta_g,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
@@ -331,7 +333,7 @@ estimated_params;
 	phi_dy,				0.02,    	,		,		normal_pdf,			0.12,				0.05;
 %	alpha,				0.25,    	,		,		beta_pdf,			0.3,				.05;
 end;
-% INITVAL = initial value of likelihood p(.)
+% 'INITVAL' = initial value of likelihood p(.)
 
 % --------------------------------
 % (3) ESTIMATION BLOCK -----------
