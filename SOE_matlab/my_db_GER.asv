@@ -18,8 +18,7 @@ T = dates_nb(idx);								% > corresponding dates
 NER = 1./data(:,5);                             % Exchange rate Foreign -> Home ($->€)
 imports_eur = data(:,4).*NER;                   % Imports are in $ : convert in € using NER
 imports_real = imports_eur./data(:,6);			% In real terms
-inflation = diff(log(data(:,6)));               % Inflation QoQ%
-
+inflation = diff(log(data(:,6)));       
 
 %% ================================
 % --- Define "observed series" ---
@@ -38,26 +37,23 @@ de_obs = diff(log(NER));
 % > Measurement equation : de_obs = log(de) (où de = ratio des exchange rate dans modèle)
 
 % (4) Inflation
-pi_obs = inflation - mean(inflation);
-% > Measurement equation : Demean the sample to make it consistant with model definition of pi - steady_state(pi)
 
 T = T(2:end);
 
 %% ================================
 % --- Export ---
 % save into `ger_obs` the series selected observed series
-save ger_obs gy_H_obs ex_F_obs pi_obs;
+save ger_obs gy_H_obs ex_F_obs de_obs;
 
 
 %% ================================
 % --- Plots ---
-close all;
 figure;
 
 subplot(2,2,1)
 plot(T,gy_H_obs)
 xlim([min(T) max(T)]);
-title('Real output (%QoQ)')
+title('German Real output (%QoQ)')
 
 subplot(2,2,2)
 plot(T,ex_F_obs)
@@ -65,16 +61,9 @@ xlim([min(T) max(T)]);
 title('German US imports (%QoQ)')
 
 subplot(2,2,3)
-plot(T,pi_obs)
-xlim([min(T) max(T)]);
-title('Inflation (%QoQ)')
-
-subplot(2,2,4)
 plot(T,de_obs)
 xlim([min(T) max(T)]);
 title('Nominal Exchange rate $->€ (%QoQ)')
-
-
 
 
 

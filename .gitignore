@@ -1,4 +1,6 @@
 # edit :
+/SOE_matlab/soe_standard/
+/SOE_matlab/+soe_standard/
 *_test/
 *.DS_Store
 

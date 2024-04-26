@@ -56,7 +56,11 @@ alphaC_F	= .11;			% Share of foreign? goods in consumption basket
 rho			= .8;			% Monetary policy coefficient smoothing
 phi_pi		= 1.5;			% Monetary policy reaction to inflation
 phi_y		= .05;			% Monetary policy reaction to output
-n			= .4;			% share of home country then size of foreign country 1-n
+
+% >> n à changer ? Germany = 84M ; US = 333M https://data.oecd.org/pop/population.htm
+% n			= .4;			% share of Home country then size of Foreign country 1-n
+n = .2;
+
 varphi		= 0.2;			% elasticity of emission to GDP
 piss		= 1.005;		% steady state inflation
 gy_H 		= 0.2;			% Public spending to gdp
@@ -67,6 +71,9 @@ tau0_H	= 50 /1000;	% value of carbon tax ($/ton)
 tau0_F	= 50 /1000;	% value of carbon tax ($/ton)
 sig_H	= 0.2; 		% Carbon intensity USA 0.2 Gt / Trillions USD
 sig_F	= 0.2; 		% Carbon intensity USA 0.2 Gt / Trillions USD
+
+% >>> y0 à changer et mettre y0 = Germany + US ?
+% y0 = 25.439 + 4.082
 y0	 	= 25;		% trillions usd PPA https://data.worldbank.org/indicator/NY.GDP.MKTP.CD
 theta1  = 0.05;		% level of abatement costs
 theta2  = 2.6;		% curvature abatement cost
