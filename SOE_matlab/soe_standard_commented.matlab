@@ -399,7 +399,7 @@ forecast=8						% forecasts horizon
 %stoch_simul(order=1, irf=12) e_t_H pi_H pi_F rer ex_H ex_F;
 
 
-%%>> mouvement 5 trimestres de e constant à +10 du steady-state (ça a un sens ??)
+%%>> mouvement 5 trimestres de e constant à +1 du steady-state (ça a un sens ??)
 
 %initial_condition_states = repmat(oo_.dr.ys,1,M_.maximum_lag);
 %%create shock matrix with number of time periods in line
