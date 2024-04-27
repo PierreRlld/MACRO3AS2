@@ -11,11 +11,15 @@
 % (?) [Real Exchange Rate (Index)] : "Quarterly – Narrow EER group of trading partners (fixed composition) – US dollar – Real effective exch. rate CPI deflated – Average" ['ECB/EXR/Q.E01.USD.ERC0.A']
 
 
+% PRENDRE EN COMPTE POPULATION GROWTH ?? Prendre des valeurs per capita ? > non psq je regarde output GROWTH stationnaire
+% remark 9 chained values 
+
+
 %% ================================
 idx = find(~isnan(sum(output_mat(:,2:end),2)));	% Find rows without NaN
 data = output_mat(idx,:);						% > dataset without missing values
 T = dates_nb(idx);								% > corresponding dates
-NER = 1./data(:,5);                             % Exchange rate Foreign -> Home ($->€)
+NER = 1./data(:,5);                             % Exchange rate Foreign -> Home ($->€) but ECB provides (€->$)
 imports_eur = data(:,4).*NER;                   % Imports are in $ : convert in € using NER
 imports_real = imports_eur./data(:,6);			% In real terms
 inflation = diff(log(data(:,6)));               % Inflation QoQ%
@@ -38,7 +42,7 @@ de_obs = diff(log(NER));
 % > Measurement equation : de_obs = log(de) (où de = ratio des exchange rate dans modèle)
 
 % (4) Inflation
-pi_obs = inflation - mean(inflation);
+pi_H_obs = inflation - mean(inflation);
 % > Measurement equation : Demean the sample to make it consistant with model definition of pi - steady_state(pi)
 
 T = T(2:end);
@@ -46,7 +50,7 @@ T = T(2:end);
 %% ================================
 % --- Export ---
 % save into `ger_obs` the series selected observed series
-save ger_obs gy_H_obs ex_F_obs pi_obs;
+save ger_obs T gy_H_obs ex_F_obs pi_H_obs de_obs;
 
 
 %% ================================
@@ -65,14 +69,14 @@ xlim([min(T) max(T)]);
 title('German US imports (%QoQ)')
 
 subplot(2,2,3)
-plot(T,pi_obs)
+plot(T,pi_H_obs)
 xlim([min(T) max(T)]);
 title('Inflation (%QoQ)')
 
-subplot(2,2,4)
-plot(T,de_obs)
-xlim([min(T) max(T)]);
-title('Nominal Exchange rate $->€ (%QoQ)')
+%subplot(2,2,4)
+%plot(T,de_obs)
+%xlim([min(T) max(T)]);
+%title('Nominal Exchange rate $->€ (%QoQ)')
 
 
 

@@ -1,12 +1,14 @@
-%----------------------------------------------------------------
+%=====================================================================
+% Arbus A, Barrio P, Rouillard P
+% Code adapted from Prof. Vermandel G (gauthier@vermandel.fr)
+%=====================================================================
+
 close all;
 %format long
-%----------------------------------------------------------------
 
-%----------------------------------------------------------------
-% 1. Defining variables
-%----------------------------------------------------------------
-
+%=====================================================================
+% 1. VARIABLES
+%=====================================================================
 var c_H r_H pic_H pi_H mc_H w_H h_H y_H p_H NFA_H lb_H ex_H
 	c_F r_F pic_F pi_F mc_F w_F h_F y_F p_F NFA_F lb_F ex_F
 	de rer
@@ -24,19 +26,18 @@ parameters	sigmaC_H sigmaC_F sigmaH_H sigmaH_F beta alpha hc_H hc_F chi_B chi_H 
 			rho_z_F rho_r_F rho_p_F rho_x_F rho_t_F rho_g_F
 			;
 
-%----------------------------------------------------------------
-% 2. Calibration
-%----------------------------------------------------------------
+%=====================================================================
+% 2. CALIBRATION
+%=====================================================================
 
 % - - - - - - - - - - - - - - -
-%% Difference between H and F :
-%% curvatures sigmaC and sigmaH
-%% consumption habits hc_H and hc_F
-%% cost of adjusting price is different for H and F firms
-%% substitution between goods for retailers is different
-%% 
+% Difference between H and F in this setting:
+% curvatures sigmaC and sigmaH
+% consumption habits hc_H and hc_F
+% cost of adjusting price is different for H and F firms
+% substitution between goods for retailers is different
+% 
 % - - - - - - - - - - - - - - -
-
 sigmaC_H		= 1.5;		% risk aversion
 sigmaC_F		= 1.2;		% risk aversion
 sigmaH_H		= 2;		% labor supply
@@ -52,19 +53,20 @@ epsilon_H	= 10;			% imperfect substitution between goods
 epsilon_F	= 9.5;			% imperfect substitution between goods
 mu			= 2;			% Substitution between home/foreign goods
 alphaC_H	= .1;			% Share of home goods in consumption basket
-alphaC_F	= .11;			% Share of foreign? goods in consumption basket
+alphaC_F	= .11;			% Share of foreign goods in consumption basket
 rho			= .8;			% Monetary policy coefficient smoothing
 phi_pi		= 1.5;			% Monetary policy reaction to inflation
 phi_y		= .05;			% Monetary policy reaction to output
 
-% >> n à changer ? Germany = 84M ; US = 333M https://data.oecd.org/pop/population.htm
-% n			= .4;			% share of Home country then size of Foreign country 1-n
-n = .2;
-
-varphi		= 0.2;			% elasticity of emission to GDP
+% >> n à changer ? Germany = 84M ; US = 333M https://data.oecd.org/pop/population.html
+n = 0.2;				    % share of Home country then size of Foreign country 1-n [n	= .4;]			
+varphi		= 0.22;			% elasticity of emission to GDP
 piss		= 1.005;		% steady state inflation
-gy_H 		= 0.2;			% Public spending to gdp
-gy_F 		= 0.2;			% Public spending to gdp
+
+% 1980 - now public spending to gdp avg : US=0.4 et Germany=0.5
+% https://ourworldindata.org/government-spending
+gy_H 		= 0.45;			% Public spending to gdp [gy_H = .5;]
+gy_F 		= 0.45;			% Public spending to gdp [gy_F = .4;]
 
 % value of main variables:
 tau0_H	= 50 /1000;	% value of carbon tax ($/ton)
@@ -72,10 +74,8 @@ tau0_F	= 50 /1000;	% value of carbon tax ($/ton)
 sig_H	= 0.2; 		% Carbon intensity USA 0.2 Gt / Trillions USD
 sig_F	= 0.2; 		% Carbon intensity USA 0.2 Gt / Trillions USD
 
-% >>> y0 à changer et mettre y0 = Germany + US ?
-% y0 = 25.439 + 4.082
-y0	 	= 25;		% trillions usd PPA https://data.worldbank.org/indicator/NY.GDP.MKTP.CD
-
+% >> avec y0 = GDP(US) + GDP(Germany) on a bien y(US) = (1-n)*y0
+y0	 	= 29;		% trillions usd PPA https://data.worldbank.org/indicator/NY.GDP.MKTP.CD
 theta1  = 0.05;		% level of abatement costs
 theta2  = 2.6;		% curvature abatement cost
 Hss		= 1/3;		% labor supply in ss
@@ -91,7 +91,9 @@ rho_g_H		= .4;  rho_g_F	= .8;
 rho_e		= .1;
 
 
-%% SS : CLOSE-FORM SOLUTION OF THE STEADY-STATE
+%=====================================================================
+% 3. COMPUTATION : CLOSE-FORM expression of the steady-state
+%=====================================================================
 steady_state_model;
 	h_H		= Hss;
 	h_F		= Hss;
@@ -137,10 +139,9 @@ steady_state_model;
 	gy_H_obs = 0; gy_F_obs = 0; gc_H_obs = 0; gc_F_obs = 0; pi_H_obs = 0; pi_F_obs = 0; r_H_obs = 0; r_F_obs = 0; de_obs = 0;  drer_obs = 0; ex_H_obs = 0; ex_F_obs = 0;
 end;
 
-%----------------------------------------------------------------
-% 3. Model (the number refers to the equation in the paper)
-%----------------------------------------------------------------
-
+%=====================================================================
+% 4. MODEL DEFINITION (the number refers to the equation in the paper)
+%=====================================================================
 model;
 	% ==============
 	%%% Households
@@ -282,45 +283,73 @@ model;
 	log(e_x_F) = rho_x_F*log(e_x_F(-1)) + eta_x_F;
 	log(e_g_F) = rho_g_F*log(e_g_F(-1)) + eta_g_F;
 	log(e_t_F) = rho_t_F*log(e_t_F(-1)) + eta_t_F;
-
+	%% exchange rate
 	log(e_e)   = rho_e*log(e_e(-1)) + eta_e;
-	
 end;
 
-
-
-% > check the starting values for the steady state
-resid;
-
-% > compute steady state given the starting values
+% > check residuals : gap in the steady-state and what dynare computes ?
+% resid;
 steady;
-
 % > check Blanchard-Kahn-conditions :
-check;
+% check;
 
 
-%%% Stochastic Simulations // replace with your codes
-shocks;
-var eta_z_H;  stderr 0.01;
-var eta_p_H;  stderr 0.01;
-var eta_r_H;  stderr 0.01;
-var eta_e;	  stderr 0.01;
-var eta_x_H;  stderr 0.01;
+%=====================================================================
+% 5. ESTIMATION (Kalman Filtering via MLE MCMC)
+%=====================================================================
+% Now we have to : estimate parameters to mimic chosen observed variables > measurement equations
+
+% --------------------------------
+% (1) Provide observable series --
+% --------------------------------
+% Dynare will look for these EXACT variables in the data matrix specified in estimation(.)
+varobs gy_H_obs ex_F_obs pi_H_obs;
+
+
+% --------------------------------
+% (2) PRIORS SELECTION -----------
+% --------------------------------
+
+% /!\ MODIFICATIONS A FAIRE /!\ 
+estimated_params;
+//	PARAM NAME,		INITVAL,	LB,		UB,		PRIOR_SHAPE,		PRIOR_P1,		PRIOR_P2,		PRIOR_P3,		PRIOR_P4,		JSCALE
+	stderr eta_g_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
+	rho_g_H,			.92,    	,		,		beta_pdf,			.5,				0.2;
+	stderr eta_p_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
+	rho_p_H,			.92,    	,		,		beta_pdf,			.5,				0.2;
+	stderr eta_r_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
+	rho_r_H,			.5,    		,		,		beta_pdf,			.5,				0.2;
+	stderr eta_e,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
+	rho_e,				.2,    		,		,		beta_pdf,			.5,				0.2;
+	
+
+	sigmaC_H,			2,    		,		,		normal_pdf,			1.5,			.35;
+	sigmaH_H,			0.8,   	 	,		,		gamma_pdf,			2,				0.5;
+	hc_H,				.34,    	,		,		beta_pdf,			.75,			0.1;
+%	kappa,				6,    		,		,		gamma_pdf,			4,				1.5;
+	xi_H,				106,    	0,		,		gamma_pdf,			100,			15;
+	rho,				.45,    	,		,		beta_pdf,			.75,			0.1;
+	phi_pi,				1.8,    	,		,		gamma_pdf,			1.5,			0.25;
+	phi_y,				0.05,    	,		,		gamma_pdf,			0.12,			0.05;
+%	alpha,				0.25,    	,		,		beta_pdf,			0.3,			.05;
 end;
+% 'INITVAL' = initial value of likelihood p(.)
 
-% Basic simulation of the model :
-stoch_simul(order=1, irf=20) y_H y_F c_H c_F pi_H pi_F r_H r_F rer ex_H ex_F;
-
-
-%----------------------------------------------------------------
-% 4. Estimation
-%----------------------------------------------------------------
-%% Now we have to : estimate parameters to mimic a few observed variables > measurement equations
-%% evaluate the 'estimated' model
+% --------------------------------
+% (3) ESTIMATION BLOCK -----------
+% --------------------------------
+estimation(datafile=ger_obs,	% Datafile must be in current folder : output of my_db_GER
+first_obs=1,					% First observable of the sample, can start later e.g first_obs = 10
+mode_compute=4,					% optimization algo, keep it to 4
+mh_replic=5000,					% number of sample in Metropolis-Hastings
+mh_jscale=0.5,					% /!\ Adjust this to have an acceptance rate between 0.2 and 0.3 in MCMC /!\ meaning 20% of the mh_replic samples accepted  
+prefilter=1,					% REMOVE THE MEAN IN THE DATA
+lik_init=2,						% >> don't touch
+mh_nblocks=1,					% number of mcmc chains
+forecast=8						% forecasts horizon
+) gy_H_obs ex_F_obs pi_H_obs;
 
 % ----------------------------
-% (1) Provide observable series :
-% Dynare will look for these exact variables in the data matrix
-% varobs gy_obs pi_obs r_obs gc_obs gi_obs;
+% Historical shock decomposition des variables observées
+shock_decomposition gy_H_obs ex_F_obs pi_H_obs;
 % ----------------------------
-

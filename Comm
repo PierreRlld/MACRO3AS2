@@ -1,0 +1,48 @@
+Comm. et questions :
+
+(0) Variables observées pour Measurement equations (papier du prof) :
+	- gy_H_obs : y_H est en Volume dans le modèle donc je prends Nominal GDP / CPI
+	- ex_F_obs  : conso de Foreign goods est en Volume + en Home currency dans le papier. La série donnée par db est en $ donc double conversion $ -> € -> Volume
+	- de_obs : nominal exchange rate, eH_t dans le modèle convertit $->€ mais la série donnée par ECB est €->$
+	- inflation : CPI %QoQ
+
+
+
+(1) Partie 2. Calibration choix des valeurs à modifier
+	- "y0" : à changer ? C'est "Steady state output" qui est réparti entre Home et Foreign.. Il donne  https://data.worldbank.org/indicator/NY.GDP.MKTP.CD comme lien. 
+	On pourrait prendre y0 = GDP(US) + GDP(Germany) ?
+	- "n" : relative size (en population) of Germany to US. n = 94/(84+333) à modif.
+
+	- Param carbon related :
+		- calibration des carbon intensity et carbon tax
+			- On peut pê reconstruire à partir de ça pour carbon intensity : https://ourworldindata.org/co2/country/germany?country=DEU~USA#energy-intensity-how-much-energy-does-it-use-per-unit-of-gdp
+		- elasticity of emissions to gdp 
+		- value of carbon tax > sur ce paramètre que l'on simule alternative policy in Home country
+		- abatment cost
+	> littérature ?
+
+	- Il y a des différences entre H et F dans le modèles sur d'autres paramètres structurels :
+		- curvatures sigmaC and sigmaH
+		- consumption habits hc_H and hc_F
+		- cost of adjusting price is different for H and F firms
+		- substitution between goods for retailers is different
+	> Je ne sais pas trop dans quelle mesure on modifie/essaye d'adapter pour notre cas Allemagne/US
+
+
+
+(2) Partie 5. Estimation - Priors selection
+	- Choix de quels paramètres estimer (chocs et paramètres plus structurels)
+	- On a seulement 3 variables observées + aucune variable spécifique à l'éco US (hors export vers allemagne) donc probablement difficile d'extraire des infos utiles pour inférer les paramètres US... On reste sur de la calibration du coup..?
+
+
+/!\ Trouve pas SS quand j'ai 2 public spending ratio différents 
+/!\ Trouve pas SS quand je change carbon tax value et intensity
+
+
+- IRF MCMC : https://forum.dynare.org/t/irfs-after-estimation-of-a-dsge-model/17031
+
+Structures :
+	- oo_
+		- oo_ après stoch_simul a plus de res
+	_ M_
+	- options_
