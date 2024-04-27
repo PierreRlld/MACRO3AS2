@@ -367,6 +367,11 @@ forecast=8						% forecasts horizon
 
 
 
+% ===============================================================
+% ===============================================================
+% ===============================================================
+% ===============================================================
+% ===============================================================
 
 
 
@@ -386,20 +391,18 @@ forecast=8						% forecasts horizon
 
 
 
-% ===============================================================
-
+%----------------------------------------------------------------
 %shocks;
 %var eta_t_H; stderr 10;
 %end;
 
 %stoch_simul(order=1, irf=12) e_t_H pi_H pi_F rer ex_H ex_F;
 
-% -----------
-% mouvement 5 trimestres de e constant à +10 du steady-state (ça a un sens ??)
-% -----------
-%initial_condition_states = repmat(oo_.dr.ys,1,M_.maximum_lag);
 
-%create shock matrix with number of time periods in line
+%%>> mouvement 5 trimestres de e constant à +10 du steady-state (ça a un sens ??)
+
+%initial_condition_states = repmat(oo_.dr.ys,1,M_.maximum_lag);
+%%create shock matrix with number of time periods in line
 %shock_matrix = zeros(options_.irf,M_.exo_nbr);
 %shock_matrix(1,strmatch('eta_t_H',M_.exo_names,'exact')) = 10;
 %shock_matrix(2:4,strmatch('eta_t_H',M_.exo_names,'exact')) = (1-rho_t_H)*(10);
@@ -408,11 +411,4 @@ forecast=8						% forecasts horizon
 %y_IRF = y2(:,M_.maximum_lag+1:end)-repmat(oo_.dr.ys,1,options_.irf); %deviation from steady state
 
 %plot(y_IRF(strmatch('pi_H',M_.endo_names,'exact'),:))
-
-
-
-
-
-
-
-
+%----------------------------------------------------------------

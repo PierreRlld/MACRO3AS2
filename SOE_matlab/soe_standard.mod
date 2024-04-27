@@ -335,6 +335,9 @@ estimated_params;
 end;
 % 'INITVAL' = initial value of likelihood p(.)
 
+% >> acceptance ratio autour de 0.3
+% >> prior domine bcp trop pour certains paramètres : à enlever du coup, garder la calibration
+
 % --------------------------------
 % (3) ESTIMATION BLOCK -----------
 % --------------------------------
@@ -353,3 +356,25 @@ forecast=8						% forecasts horizon
 % Historical shock decomposition des variables observées
 shock_decomposition gy_H_obs ex_F_obs pi_H_obs;
 % ----------------------------
+
+shocks;
+var eta_t_H; stderr 1;
+end;
+
+stoch_simul(order=1, irf=16) e_t_H pi_H pi_F rer ex_H ex_F;
+
+% pas sûr de l'output de la partie suivante, ça marche pour un autre fichier que j'ai
+%%>> mouvement 5 trimestres la taxe carbone constant à +1 du steady-state
+
+initial_condition_states = repmat(oo_.dr.ys,1,M_.maximum_lag);
+%%create shock matrix with number of time periods in line
+shock_matrix = zeros(options_.irf,M_.exo_nbr);
+shock_matrix(1,strmatch('eta_t_H',M_.exo_names,'exact')) = 10;
+shock_matrix(2:4,strmatch('eta_t_H',M_.exo_names,'exact')) = (1-rho_t_H)*(10);
+
+y2 = simult_(M_,options_,initial_condition_states,oo_.dr,shock_matrix,1);
+y_IRF = y2(:,M_.maximum_lag+1:end)-repmat(oo_.dr.ys,1,options_.irf); %deviation from steady state
+
+plot(y_IRF(strmatch('pi_H',M_.endo_names,'exact'),:))
+title('Effect on inflation (dev. from steady state)')
+%----------------------------------------------------------------

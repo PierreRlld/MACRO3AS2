@@ -38,8 +38,12 @@ Comm. et questions :
 /!\ Trouve pas SS quand j'ai 2 public spending ratio différents 
 /!\ Trouve pas SS quand je change carbon tax value et intensity
 
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
 
 - IRF MCMC : https://forum.dynare.org/t/irfs-after-estimation-of-a-dsge-model/17031
+- https://forum.dynare.org/t/choosing-an-appropriate-standard-deviation-for-prior/4331
 
 Structures :
 	- oo_
