@@ -30,57 +30,44 @@ parameters	sigmaC_H sigmaC_F sigmaH_H sigmaH_F beta alpha hc_H hc_F chi_B chi_H 
 % 2. CALIBRATION
 %=====================================================================
 
-% - - - - - - - - - - - - - - -
-% Difference between H and F in this setting:
-% curvatures sigmaC and sigmaH
-% consumption habits hc_H and hc_F
-% cost of adjusting price is different for H and F firms
-% substitution between goods for retailers is different
-% 
-% - - - - - - - - - - - - - - -
+
+% >>> BASE
+% ------------ Calibrated -------------------
 sigmaC_H		= 1.5;		% risk aversion
-sigmaC_F		= 1.2;		% risk aversion
+sigmaC_F		= 1.2;		% risk aversion >> chercher US?
 sigmaH_H		= 2;		% labor supply
-sigmaH_F		= 1.9;		% labor supply
+sigmaH_F		= 1.9;		% labor supply	>> chercher US?
 beta		= .994;			% discount factor
 alpha		= .7;			% share of labor in production
 hc_H		= .7;			% consumption habits
 hc_F		= .6;			% consumption habits
-chi_B		= 0.007;		% cost of foreign debt (same for hh in H or in F)
-xi_H		= 100;			% cost adjustment prices
-xi_F		= 80;			% cost adjustment prices
-epsilon_H	= 10;			% imperfect substitution between goods
-epsilon_F	= 9.5;			% imperfect substitution between goods
+chi_B		= 0.007;		% (x) cost of foreign debt (same for hh in H or in F)
+xi_H		= 100;			% (x) cost adjustment prices
+xi_F		= 80;			% (x) cost adjustment prices
+epsilon_H	= 10;			% (x) imperfect substitution between goods
+epsilon_F	= 9.5;			% (x) imperfect substitution between goods
 mu			= 2;			% Substitution between home/foreign goods
 alphaC_H	= .1;			% Share of home goods in consumption basket
 alphaC_F	= .11;			% Share of foreign goods in consumption basket
+%
+n 			= 0.2;			% share of Home country then size of Foreign country 1-n : https://data.oecd.org/pop/population.html
+y0	 		= 29;			% trillions usd PPA : https://data.worldbank.org/indicator/NY.GDP.MKTP.CD ; on a bien y(US) = (1-n)*y0
+piss		= 1.005;		% steady state inflation
+Hss			= 1/3;			% labor supply in ss
+gy_H 		= 0.45;			% Public spending to gdp : https://ourworldindata.org/government-spending
+gy_F 		= 0.45;			% Public spending to gdp : 1980 - now public spending to gdp avg : US=0.4 et Germany=0.5
+% ------------ Climate block ----------------
+varphi	= 0.22;				% elasticity of emission to GDP
+tau0_H	= 50 /1000;			% value of carbon tax ($/ton)
+tau0_F	= 50 /1000;			% value of carbon tax ($/ton)
+sig_H	= 0.2; 				% Carbon intensity USA 0.2 Gt / Trillions USD
+sig_F	= 0.2; 				% Carbon intensity USA 0.2 Gt / Trillions USD
+theta1  = 0.05;				% level of abatement costs
+theta2  = 2.6;				% curvature abatement cost
+% ------------ Estimated with KF ------------
 rho			= .8;			% Monetary policy coefficient smoothing
 phi_pi		= 1.5;			% Monetary policy reaction to inflation
 phi_y		= .05;			% Monetary policy reaction to output
-
-% >> n à changer ? Germany = 84M ; US = 333M https://data.oecd.org/pop/population.html
-n = 0.2;				    % share of Home country then size of Foreign country 1-n [n	= .4;]			
-varphi		= 0.22;			% elasticity of emission to GDP
-piss		= 1.005;		% steady state inflation
-
-% 1980 - now public spending to gdp avg : US=0.4 et Germany=0.5
-% https://ourworldindata.org/government-spending
-gy_H 		= 0.45;			% Public spending to gdp [gy_H = .5;]
-gy_F 		= 0.45;			% Public spending to gdp [gy_F = .4;]
-
-% value of main variables:
-tau0_H	= 50 /1000;	% value of carbon tax ($/ton)
-tau0_F	= 50 /1000;	% value of carbon tax ($/ton)
-sig_H	= 0.2; 		% Carbon intensity USA 0.2 Gt / Trillions USD
-sig_F	= 0.2; 		% Carbon intensity USA 0.2 Gt / Trillions USD
-
-% >> avec y0 = GDP(US) + GDP(Germany) on a bien y(US) = (1-n)*y0
-y0	 	= 29;		% trillions usd PPA https://data.worldbank.org/indicator/NY.GDP.MKTP.CD
-theta1  = 0.05;		% level of abatement costs
-theta2  = 2.6;		% curvature abatement cost
-Hss		= 1/3;		% labor supply in ss
-
-
 % parameters of autoregressive shocks						
 rho_z_H 	= .95; rho_z_F 	= .95;
 rho_p_H 	= .95; rho_p_F 	= .95;
@@ -89,6 +76,56 @@ rho_x_H		= .4;  rho_x_F	= .4;
 rho_t_H		= .4;  rho_t_F	= .4;
 rho_g_H		= .4;  rho_g_F	= .8;
 rho_e		= .1;
+
+
+
+% >>> Based on the iFO DSGE model for Germany
+% ------------ Calibrated -------------------
+/sigmaC_H		= 2;		% risk aversion
+/sigmaC_F		= 2;		% risk aversion >> chercher US?
+/sigmaH_H		= 1.5;		% labor supply
+/sigmaH_F		= 1.5;		% labor supply	>> chercher US?
+/beta		= .998;			% discount factor
+/alpha		= .57;			% share of labor in production
+hc_H		= .7;			% consumption habits
+/hc_F		= .7;			% consumption habits
+chi_B		= 0.007;		% (x) cost of foreign debt (same for hh in H or in F)
+xi_H		= 100;			% (x) cost adjustment prices
+xi_F		= 80;			% (x) cost adjustment prices
+epsilon_H	= 10;			% (x) imperfect substitution between goods
+epsilon_F	= 9.5;			% (x) imperfect substitution between goods
+mu			= 1.1;			% Substitution between home/foreign goods
+/alphaC_H	= .5;			% Share of home goods in consumption basket
+/alphaC_F	= .5;			% "Share of foreign goods in consumption basket" >> non???
+n 			= 0.2;			% share of Home country then size of Foreign country 1-n : https://data.oecd.org/pop/population.html
+y0	 		= 29;			% trillions usd PPA : https://data.worldbank.org/indicator/NY.GDP.MKTP.CD ; on a bien y(US) = (1-n)*y0
+piss		= 1.005;		% steady state inflation
+Hss			= 1/3;			% labor supply in ss
+gy_H 		= 0.45;			% Public spending to gdp : https://ourworldindata.org/government-spending
+gy_F 		= 0.45;			% Public spending to gdp : 1980 - now public spending to gdp avg : US=0.4 et Germany=0.5
+% ------------ Climate block ----------------
+varphi	= 0.22;				% elasticity of emission to GDP
+tau0_H	= 50 /1000;			% value of carbon tax ($/ton)
+tau0_F	= 50 /1000;			% value of carbon tax ($/ton)
+sig_H	= 0.2; 				% Carbon intensity USA 0.2 Gt / Trillions USD
+sig_F	= 0.2; 				% Carbon intensity USA 0.2 Gt / Trillions USD
+theta1  = 0.05;				% level of abatement costs
+theta2  = 2.6;				% curvature abatement cost
+% ------------ Estimated with KF ------------
+rho			= .8;			% Monetary policy coefficient smoothing
+phi_pi		= 1.5;			% Monetary policy reaction to inflation
+phi_y		= .05;			% Monetary policy reaction to output
+% parameters of autoregressive shocks						
+rho_z_H 	= .95; rho_z_F 	= .95;
+rho_p_H 	= .95; rho_p_F 	= .95;
+rho_r_H		= .4;  rho_r_F	= .4;
+rho_x_H		= .4;  rho_x_F	= .4;
+rho_t_H		= .4;  rho_t_F	= .4;
+rho_g_H		= .4;  rho_g_F	= .8;
+rho_e		= .1;
+
+
+
 
 
 %=====================================================================
@@ -309,12 +346,12 @@ varobs gy_H_obs ex_F_obs pi_H_obs;
 % --------------------------------
 % (2) PRIORS SELECTION -----------
 % --------------------------------
+% 'INITVAL' = initial value of likelihood p(.)
 
-% /!\ MODIFICATIONS A FAIRE /!\ 
 estimated_params;
 //	PARAM NAME,		INITVAL,	LB,		UB,		PRIOR_SHAPE,		PRIOR_P1,		PRIOR_P2,		PRIOR_P3,		PRIOR_P4,		JSCALE
-	stderr eta_g_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
-	rho_g_H,			.92,    	,		,		beta_pdf,			.5,				0.2;
+%	stderr eta_g_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
+%	rho_g_H,			.92,    	,		,		beta_pdf,			.5,				0.2;
 	stderr eta_p_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
 	rho_p_H,			.92,    	,		,		beta_pdf,			.5,				0.2;
 	stderr eta_r_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
@@ -322,18 +359,27 @@ estimated_params;
 	stderr eta_e,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
 	rho_e,				.2,    		,		,		beta_pdf,			.5,				0.2;
 	
-
-	sigmaC_H,			2,    		,		,		normal_pdf,			1.5,			.35;
-	sigmaH_H,			0.8,   	 	,		,		gamma_pdf,			2,				0.5;
-	hh_H,				.34,    	,		,		beta_pdf,			.75,			0.1;
-%	kappa,				6,    		,		,		gamma_pdf,			4,				1.5;
-	xi_H,				106,    	0,		,		gamma_pdf,			100,			15;
-	rho,				.45,    	,		,		beta_pdf,			.75,			0.1;
-	phi_pi,				1.8,    	,		,		gamma_pdf,			1.5,			0.25;
-	phi_y,				0.05,    	,		,		gamma_pdf,			0.12,			0.05;
-%	alpha,				0.25,    	,		,		beta_pdf,			0.3,			.05;
+	rho,				.45,    	,		,		beta_pdf,			0.8,			0.1;
+	phi_pi,				1.8,    	,		,		normal_pdf,			1.5,			0.2;
+	phi_y,				0.05,    	,		,		beta_pdf,			0.2,			0.15;
 end;
-% 'INITVAL' = initial value of likelihood p(.)
+
+
+estimated_params;
+//	PARAM NAME,		INITVAL,	LB,		UB,		PRIOR_SHAPE,		PRIOR_P1,		PRIOR_P2,		PRIOR_P3,		PRIOR_P4,		JSCALE
+%	stderr eta_g_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
+%	rho_g_H,			.92,    	,		,		beta_pdf,			.5,				0.2;
+	stderr eta_p_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
+	rho_p_H,			,    		,		,		beta_pdf,			.5,				0.2;
+	stderr eta_r_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
+	rho_r_H,			,    		,		,		beta_pdf,			.5,				0.2;
+	stderr eta_e,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
+	rho_e,				,    		,		,		beta_pdf,			.5,				0.2;
+	
+	rho,				,    	,		,		beta_pdf,			0.8,			0.1;
+	phi_pi,				,    	,		,		normal_pdf,			1.5,			0.2;
+	phi_y,				,    	,		,		beta_pdf,			0.2,			0.15;
+end;
 
 % --------------------------------
 % (3) ESTIMATION BLOCK -----------
@@ -347,7 +393,7 @@ prefilter=1,					% REMOVE THE MEAN IN THE DATA
 lik_init=2,						% >> don't touch
 mh_nblocks=1,					% number of mcmc chains
 forecast=8						% forecasts horizon
-) gy_H_obs ex_F_obs pi_obs;
+) gy_H_obs ex_F_obs pi_H_obs;
 
 
 
@@ -374,23 +420,6 @@ forecast=8						% forecasts horizon
 % ===============================================================
 
 
-
-%----------------------------------------------------------------
-% Stochastic Simulations
-%shocks;
-%var eta_z_H;  stderr 0.01;
-%var eta_p_H;  stderr 0.01;
-%var eta_r_H;  stderr 0.01;
-%var eta_e;	  stderr 0.01;
-%var eta_x_H;  stderr 0.01;
-%end;
-% Basic simulation of the model :
-% /!\ IRF PRINT DES DEVIATIONS PAR RAPPORT AU STEADY-STATE /!\
-%stoch_simul(order=1, irf=20) y_H y_F c_H c_F pi_H pi_F r_H r_F rer ex_H ex_F;
-%----------------------------------------------------------------
-
-
-
 %----------------------------------------------------------------
 %shocks;
 %var eta_t_H; stderr 10;
@@ -411,4 +440,19 @@ forecast=8						% forecasts horizon
 %y_IRF = y2(:,M_.maximum_lag+1:end)-repmat(oo_.dr.ys,1,options_.irf); %deviation from steady state
 
 %plot(y_IRF(strmatch('pi_H',M_.endo_names,'exact'),:))
+%----------------------------------------------------------------
+
+
+%----------------------------------------------------------------
+% Stochastic Simulations
+%shocks;
+%var eta_z_H;  stderr 0.01;
+%var eta_p_H;  stderr 0.01;
+%var eta_r_H;  stderr 0.01;
+%var eta_e;	  stderr 0.01;
+%var eta_x_H;  stderr 0.01;
+%end;
+% Basic simulation of the model :
+% /!\ IRF PRINT DES DEVIATIONS PAR RAPPORT AU STEADY-STATE /!\
+%stoch_simul(order=1, irf=20) y_H y_F c_H c_F pi_H pi_F r_H r_F rer ex_H ex_F;
 %----------------------------------------------------------------
