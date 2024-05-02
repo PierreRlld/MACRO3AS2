@@ -527,7 +527,7 @@ ydov            = simult_(Mx,options_,oox.dr.ys,oox.dr,ee_mat,options_.order);
 
 % ------
 % Plot results
-var_names={'lny','lnc','lni','lnpi','lnr','h_obs'};
+var_names={'gy_H_obs', 'pi_H_obs', 'ex_F_obs', 'r_H_obs'};
 Ty = [T(1)-Tfreq;T];
 % draw_tables from 'draw_tables.m'
 draw_tables(var_names,M_,Ty,[],y_,ydov)

@@ -110,8 +110,8 @@ for ix=1:size(fx,1)
 	if ix==1; ee_mat2 = zeros(length(shock_mat),M_.exo_nbr); end;
 	ee_mat2(:,strmatch(fx{ix},M_.exo_names,'exact')) = shock_mat;
 end
-% concatenate (row-wise) a matrix of zeros for exog shocks
-ee_mat2 	= [ee_mat2;zeros(Thorizon,M_.exo_nbr)];
+% add mean-wise forecast with zero mean shocks
+ee_mat2 	= [ee_mat;zeros(Thorizon,M_.exo_nbr)];
 Tvec2 		= Tvec(1):Tfreq:(Tvec(1)+size(ee_mat2,1)*Tfreq);
 
 

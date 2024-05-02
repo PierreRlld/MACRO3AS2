@@ -1,4 +1,4 @@
-function [] = draw_tables(var_names,M_,T,xlimval,varargin)
+function [] = draw_tables(var_names,M_,T,xlimval,legd,varargin)
 %DRAW_TABLES Summary of this function goes here
 %   Detailed explanation goes here
 n = size(var_names,2);
@@ -16,6 +16,7 @@ for ix = 1:n
        themat = varargin{iy};
        plot(T,themat(idy,:),'linewidth',1)
     end
+    legend(legd,'Location','northwest')
     title(M_.endo_names_tex{idy})
     grid on;
     hold off;
