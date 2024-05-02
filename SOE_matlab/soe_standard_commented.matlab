@@ -51,7 +51,7 @@ alphaC_H	= .1;			% Share of home goods in consumption basket
 alphaC_F	= .11;			% Share of foreign goods in consumption basket
 %
 n 			= 0.2;			% share of Home country then size of Foreign country 1-n : https://data.oecd.org/pop/population.html
-y0	 		= 29;			% trillions usd PPA : https://data.worldbank.org/indicator/NY.GDP.MKTP.CD ; on a bien y(US) = (1-n)*y0
+y0	 		= 25;			% trillions usd PPA : https://data.worldbank.org/indicator/NY.GDP.MKTP.CD ; on a bien y(US) = (1-n)*y0
 piss		= 1.005;		% steady state inflation
 Hss			= 1/3;			% labor supply in ss
 gy_H 		= 0.45;			% Public spending to gdp : https://ourworldindata.org/government-spending
@@ -226,16 +226,12 @@ model;
 	[name='FOC y']
 	tau_H*sig_H*y_H^(1-varphi) = theta2*theta1*mu_H^(theta2-1);
 	tau_F*sig_F*y_F^(1-varphi) = theta2*theta1*mu_F^(theta2-1);
-	% ==============
-
 
 	% ==============
 	%%% AGGREGATION
 	[name='Resources constraint']
 	y_H = phi_H*p_H^-mu*c_H + e_x_F*(1-phi_F)*(p_H/rer)^-mu*c_F*(1-n)/n  + g_H + theta1*mu_H^theta2*y_H + 0.5*xi_H*(pi_H-piss)^2*y_H + 0.5*chi_B*(NFA_H-STEADY_STATE(NFA_H))^2;
 	y_F = phi_F*p_F^-mu*c_F + e_x_H*(1-phi_H)*(p_F*rer)^-mu*c_H*n/(1-n)  + g_F + theta1*mu_F^theta2*y_F + 0.5*xi_F*(pi_F-piss)^2*y_F - 0.5*chi_B*(NFA_F-STEADY_STATE(NFA_F))^2;
-	% ==============
-	
 
 	% ==============
 	%%% POLICIES
@@ -250,8 +246,6 @@ model;
 	[name='Carbon tax']
 	tau_H = tau0_H*e_t_H;
 	tau_F = tau0_F*e_t_F;
-	% ==============
-
 
 	% ==============
 	%%% Common macro variables from the Home country perspective
@@ -270,9 +264,7 @@ model;
 	[name='Exports']
 	ex_H = e_x_H*(1-phi_F)*(p_H/rer)^-mu*c_F*(1-n);
 	ex_F = e_x_F*(1-phi_H)*(p_F*rer)^-mu*c_H*n;
-	% ==============
 	
-
 	% ==============
 	%% Observable variables > data from dbnomics should have EXACT SAME names for the chosen series
 	[name='measurement GDP']
@@ -300,8 +292,6 @@ model;
 	[name='measurement exports change']
 	ex_H_obs  = log(ex_H/ex_H(-1));
 	ex_F_obs  = log(ex_F/ex_F(-1));
-	% ==============
-
 
 	% ==============
 	%% Stochastic processes
@@ -331,6 +321,7 @@ steady;
 % check;
 
 
+
 %=====================================================================
 % 5. ESTIMATION (Kalman Filtering via MLE MCMC)
 %=====================================================================
@@ -340,18 +331,18 @@ steady;
 % (1) Provide observable series --
 % --------------------------------
 % Dynare will look for these EXACT variables in the data matrix specified in estimation(.)
-varobs gy_H_obs ex_F_obs pi_H_obs;
-
+varobs gy_H_obs pi_H_obs ex_F_obs r_H_obs;
 
 % --------------------------------
 % (2) PRIORS SELECTION -----------
 % --------------------------------
 % 'INITVAL' = initial value of likelihood p(.)
 
+%{
 estimated_params;
 //	PARAM NAME,		INITVAL,	LB,		UB,		PRIOR_SHAPE,		PRIOR_P1,		PRIOR_P2,		PRIOR_P3,		PRIOR_P4,		JSCALE
-%	stderr eta_g_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
-%	rho_g_H,			.92,    	,		,		beta_pdf,			.5,				0.2;
+	stderr eta_g_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
+	rho_g_H,			.92,    	,		,		beta_pdf,			.5,				0.2;
 	stderr eta_p_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
 	rho_p_H,			.92,    	,		,		beta_pdf,			.5,				0.2;
 	stderr eta_r_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
@@ -363,7 +354,7 @@ estimated_params;
 	phi_pi,				1.8,    	,		,		normal_pdf,			1.5,			0.2;
 	phi_y,				0.05,    	,		,		beta_pdf,			0.2,			0.15;
 end;
-
+%}
 
 estimated_params;
 //	PARAM NAME,		INITVAL,	LB,		UB,		PRIOR_SHAPE,		PRIOR_P1,		PRIOR_P2,		PRIOR_P3,		PRIOR_P4,		JSCALE
@@ -375,31 +366,185 @@ estimated_params;
 	rho_r_H,			,    		,		,		beta_pdf,			.5,				0.2;
 	stderr eta_e,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
 	rho_e,				,    		,		,		beta_pdf,			.5,				0.2;
+	stderr eta_x_F,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
+	rho_x_F,			,    		,		,		beta_pdf,			.5,				0.2;
+	stderr eta_z_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
+	rho_z_H,			,    		,		,		beta_pdf,			.5,				0.2;
 	
-	rho,				,    	,		,		beta_pdf,			0.8,			0.1;
-	phi_pi,				,    	,		,		normal_pdf,			1.5,			0.2;
-	phi_y,				,    	,		,		beta_pdf,			0.2,			0.15;
+	rho,				,    		,		,		beta_pdf,			0.8,			0.1;
+	phi_pi,				,    		,		,		normal_pdf,			1.5,			0.2;
+	phi_y,				,    		,		,		beta_pdf,			0.2,			0.15;
 end;
+
+
 
 % --------------------------------
 % (3) ESTIMATION BLOCK -----------
 % --------------------------------
 estimation(datafile=ger_obs,	% Datafile must be in current folder : output of my_db_GER
 first_obs=1,					% First observable of the sample, can start later e.g first_obs = 10
-mode_compute=4,					% optimization algo, keep it to 4
-mh_replic=5000,					% number of sample in Metropolis-Hastings
-mh_jscale=0.5,					% /!\ Adjust this to have an acceptance rate between 0.2 and 0.3 in MCMC /!\ meaning 20% of the mh_replic samples accepted  
+mode_compute=6,					% optimization algo, keep it to 4
+mh_replic=10000,				% number of sample in Metropolis-Hastings
+mh_jscale=0.6,					% /!\ Adjust this to have an acceptance rate between 0.2 and 0.3 in MCMC /!\ meaning 20% of the mh_replic samples accepted  
 prefilter=1,					% REMOVE THE MEAN IN THE DATA
 lik_init=2,						% >> don't touch
 mh_nblocks=1,					% number of mcmc chains
 forecast=8						% forecasts horizon
-) gy_H_obs ex_F_obs pi_H_obs;
+) gy_H_obs pi_H_obs ex_F_obs r_H_obs;
+
+% ----------------------------
+% Historical shock decomposition des variables ...
+shock_decomposition gy_H_obs pi_H_obs ex_F_obs r_H_obs;
+
+stoch_simul(irf=16,conditional_variance_decomposition=[1,4,10,100],order=1) gy_H_obs pi_H_obs ex_F_obs r_H_obs;
+% ----------------------------
 
 
 
-% --------------------------------
-% (4) LOADINGS -------------------
-% --------------------------------
+%=====================================================================
+%======= SAVE WORKSPACE AS A .mat FILE ===============================
+%=====================================================================
+
+
+
+%=====================================================================
+%======= In a new .m FILE ============================================
+%=====================================================================
+
+
+
+%% >>> Load estimated parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%{
+	'oo_.posterior_mean'	
+		> .parameters
+		> .shocks_std
+%}
+load("soe_res_save.mat");
+% process ESTIMATED PARAMETERS
+fn = fieldnames(oo_.posterior_mean.parameters);
+for ix = 1:size(fn,1)
+	set_param_value(fn{ix},eval(['oo_.posterior_mean.parameters.' fn{ix} ]))
+end
+% process ESTIMATED SHOCKS
+fx = fieldnames(oo_.posterior_mean.shocks_std);
+for ix = 1:size(fx,1)
+	idx = strmatch(fx{ix},M_.exo_names,'exact');
+	M_.Sigma_e(idx,idx) = eval(['oo_.posterior_mean.shocks_std.' fx{ix}])^2;
+end
+% load OBSERVED data
+load(options_.datafile);
+if exist('T') ==1
+	Tvec = T;
+else
+	Tvec = 1:size(dataset_,1);
+end
+% Tvec : vector of dates
+Tfreq = mean(diff(Tvec));
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%% >>> END OF SAMPLE FORECASTING - PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%{
+	'dataset_' : observed data
+		> .data
+		> .dates
+		> .name
+
+	'dataset_info'
+
+	'M_' : model
+	'oo_' : 
+		> .shock_decomposition
+		> .SmoothedVariables
+		> .SmoothedShocks
+		> MeanForecast
+			> .Mean : foreacast values
+			> .Var : uncertainty around forecast
+%}
+tprior = 20; 	% period before forecasts to plot
+Tvec2 = Tvec(end) + (0:(options_.forecast))*Tfreq;
+for i1 = 1 :size(dataset_.name,1)
+	% position indices of observed variable number i1 in dataset and Model 
+	idv		= strmatch(dataset_.name{i1},M_.endo_names,'exact');
+	idd		= strmatch(dataset_.name{i1},dataset_.name,'exact');
+	if ~isempty(idd) && isfield(oo_.MeanForecast.Mean, dataset_.name{i1})
+		% Create chart :
+		% Find model based values for observed variables (SmoothedVariables) + add observed mean
+		% because the model is based on zero-mean version of the data (prefilter in estimation)
+		yobs   = eval(['oo_.SmoothedVariables.' dataset_.name{i1}])+dataset_info.descriptive.mean(idd);
+		yfc    = eval(['oo_.MeanForecast.Mean.'  dataset_.name{i1}])+dataset_info.descriptive.mean(idd);
+		yfcVar = sqrt(eval(['oo_.MeanForecast.Var.' dataset_.name{i1}]));
+		figure;
+		plot(Tvec(end-tprior+1:end),yobs(end-tprior+1:end))
+		hold on;
+			plot(Tvec2,[yobs(end) yfc'] ,'r--','LineWidth',1.5);
+			% '1.96' due to normality assumption for 'residuals' in space-state representation of the model
+			plot(Tvec2,[yobs(end) (yfc+1.96*yfcVar)'],'r:','LineWidth',1.5)
+			plot(Tvec2,[yobs(end) (yfc-1.96*yfcVar)'],'r:','LineWidth',1.5)
+			grid on;
+			xlim([Tvec(end-tprior+1) Tvec2(end)])
+			legend('Sample','Forecasting','Uncertainty')
+			title(['forecasting of ' M_.endo_names_tex{idv}])
+		hold off;
+	else
+		warning([ dataset_.name{i1} ' is not an observable or you have not computed its forecast'])
+	end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%% >>> COUNTERFACTUAL EXERCISES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% stack estimated values for exogenous shocks in a matrix
+fx = fieldnames(oo_.SmoothedShocks);
+for ix=1:size(fx,1)
+	% extract the correct (model-based) series from oo_.SmoothedShocks
+	shock_mat = eval(['oo_.SmoothedShocks.' fx{ix}]);
+	if ix==1; ee_mat = zeros(length(shock_mat),M_.exo_nbr); end;
+	ee_mat(:,strmatch(fx{ix},M_.exo_names,'exact')) = shock_mat;
+end
+
+% ------
+%>>> Simulate BASELINE scenario
+% SOLVE DECISION RULEs
+[oo_.dr, info, M_.params] = resol(0, M_, options_, oo_.dr, oo_.dr.ys, oo_.exo_steady_state, oo_.exo_det_steady_state);
+% SIMULATE the model
+y_            = simult_(M_,options_,oo_.dr.ys,oo_.dr,ee_mat,options_.order);
+
+% ------
+%>>> Simulate ALTERNATIVE scenario
+% (!) make a copy (!)
+Mx  = M_;
+oox = oo_;
+% (!) CHANGE PARAMETER (!)
+Mx.params(strcmp('phi_y',M_.param_names)) = .25;
+% solve new decision rule
+[oox.dr, info, Mx.params] = resol(0, Mx, options_, oox.dr, oox.dr.ys, oox.exo_steady_state, oox.exo_det_steady_state);
+% simulate dovish central bank
+ydov            = simult_(Mx,options_,oox.dr.ys,oox.dr,ee_mat,options_.order);
+
+
+% ------
+% Plot results
+var_names={'lny','lnc','lni','lnpi','lnr','h_obs'};
+Ty = [T(1)-Tfreq;T];
+% draw_tables from 'draw_tables.m'
+draw_tables(var_names,M_,Ty,[],y_,ydov)
+legend('Estimated','Dovish')
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -456,3 +601,7 @@ forecast=8						% forecasts horizon
 % /!\ IRF PRINT DES DEVIATIONS PAR RAPPORT AU STEADY-STATE /!\
 %stoch_simul(order=1, irf=20) y_H y_F c_H c_F pi_H pi_F r_H r_F rer ex_H ex_F;
 %----------------------------------------------------------------
+
+
+
+

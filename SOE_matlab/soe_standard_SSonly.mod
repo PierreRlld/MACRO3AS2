@@ -276,78 +276,7 @@ end;
 % -------
 % > check residuals : gap in the steady-state and what dynare computes ?
 resid;
-% steady;
+steady;
 % > check Blanchard-Kahn-conditions :
 % check;
 % -------
-
-
-%=====================================================================
-% 5. ESTIMATION (Kalman Filtering via MLE MCMC)
-%=====================================================================
-% Now we have to : estimate parameters to mimic chosen observed variables > measurement equations
-
-% --------------------------------
-% (1) Provide observable series --
-% --------------------------------
-% Dynare will look for these EXACT variables in the data matrix specified in estimation(.)
-varobs gy_H_obs pi_H_obs ex_F_obs r_H_obs;
-
-% --------------------------------
-% (2) PRIORS SELECTION -----------
-% --------------------------------
-% 'INITVAL' = initial value of likelihood p(.)
-
-estimated_params;
-//	PARAM NAME,		INITVAL,	LB,		UB,		PRIOR_SHAPE,		PRIOR_P1,		PRIOR_P2,		PRIOR_P3,		PRIOR_P4,		JSCALE
-%	stderr eta_g_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
-%	rho_g_H,			.92,    	,		,		beta_pdf,			.5,				0.2;
-	stderr eta_p_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
-	rho_p_H,			,    		,		,		beta_pdf,			.5,				0.2;
-	stderr eta_r_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
-	rho_r_H,			,    		,		,		beta_pdf,			.5,				0.2;
-	stderr eta_e,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
-	rho_e,				,    		,		,		beta_pdf,			.5,				0.2;
-	stderr eta_x_F,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
-	rho_x_F,			,    		,		,		beta_pdf,			.5,				0.2;
-	stderr eta_z_H,   	,			,		,		INV_GAMMA_PDF,		.01,			2;
-	rho_z_H,			,    		,		,		beta_pdf,			.5,				0.2;
-	
-	rho,				,    	,		,		beta_pdf,			0.8,			0.1;
-	phi_pi,				,    	,		,		normal_pdf,			1.5,			0.2;
-	phi_y,				,    	,		,		beta_pdf,			0.2,			0.15;
-end;
-
-% --------------------------------
-% (3) ESTIMATION BLOCK -----------
-% --------------------------------
-estimation(datafile=ger_obs,	% Datafile must be in current folder : output of my_db_GER
-first_obs=1,					% First observable of the sample, can start later e.g first_obs = 10
-mode_compute=6,					% optimization algo, keep it to 4
-mh_replic=10000,				% number of sample in Metropolis-Hastings
-mh_jscale=0.6,					% /!\ Adjust this to have an acceptance rate between 0.2 and 0.3 in MCMC /!\ meaning 20% of the mh_replic samples accepted  
-prefilter=1,					% REMOVE THE MEAN IN THE DATA
-lik_init=2,						% >> don't touch
-mh_nblocks=1,					% number of mcmc chains
-forecast=8						% forecasts horizon
-) gy_H_obs pi_H_obs ex_F_obs r_H_obs;
-
-% ----------------------------
-% Historical shock decomposition des variables ...
-shock_decomposition gy_H_obs pi_H_obs ex_F_obs r_H_obs;
-% ----------------------------
-
-% ------------------------------------------------------------------------------
-% load ESTIMATED PARAMETERS
-fn = fieldnames(oo_.posterior_mean.parameters);
-for ix = 1:size(fn,1)
-	set_param_value(fn{ix},eval(['oo_.posterior_mean.parameters.' fn{ix} ]))
-end
-% load ESTIMATED SHOCKS
-fx = fieldnames(oo_.posterior_mean.shocks_std);
-for ix = 1:size(fx,1)
-	idx = strmatch(fx{ix},M_.exo_names,'exact');
-	M_.Sigma_e(idx,idx) = eval(['oo_.posterior_mean.shocks_std.' fx{ix}])^2;
-end
-
-stoch_simul(irf=16,conditional_variance_decomposition=[1,4,10,100],order=1) gy_H_obs pi_H_obs ex_F_obs r_H_obs;
