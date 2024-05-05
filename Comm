@@ -45,8 +45,4 @@ Comm. et questions :
 - IRF MCMC : https://forum.dynare.org/t/irfs-after-estimation-of-a-dsge-model/17031
 - https://forum.dynare.org/t/choosing-an-appropriate-standard-deviation-for-prior/4331
 
-Structures :
-	- oo_
-		- oo_ après stoch_simul a plus de res
-	_ M_
-	- options_
+> resol computes the decision rules. If you change parameters, you of course need to recompute the decision rules. If you just run a different simulation with different shocks, then you don’t need to invoke it again.

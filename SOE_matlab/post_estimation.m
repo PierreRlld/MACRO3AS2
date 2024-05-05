@@ -3,14 +3,17 @@ close all;
 
 %% >>> Load estimated parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% ///////////////////////
 load("soe_res_save.mat");
+% ///////////////////////
 
-% load ESTIMATED PARAMETERS
+
+% process ESTIMATED PARAMETERS
 fn = fieldnames(oo_.posterior_mean.parameters);
 for ix = 1:size(fn,1)
 	set_param_value(fn{ix},eval(['oo_.posterior_mean.parameters.' fn{ix} ]))
 end
-% load ESTIMATED SHOCKS
+% process ESTIMATED SHOCKS
 fx = fieldnames(oo_.posterior_mean.shocks_std);
 for ix = 1:size(fx,1)
 	idx = strmatch(fx{ix},M_.exo_names,'exact');
