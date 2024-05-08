@@ -1,6 +1,6 @@
 function [] = draw_tables(var_names,M_,T,xlimval,legd,varargin)
-%DRAW_TABLES Summary of this function goes here
-%   Detailed explanation goes here
+%
+%
 n = size(var_names,2);
 nv = length(varargin);
 

@@ -1,3 +1,23 @@
+0/ Abstract: summarize main results + briefly present the economic problem and the data.
+
+1/ Motivate our research question and model selection. Peu être expliquer rapidement les principaux blocs du modèle.
+
+2/ Data : justify sample choice (what observables) + transformations (stationarity, unit...)
+
+3/ Calibration & Estimation :
+	- Parameters calibration > for most structural parameters we base our calibration on the iFO model for Germany
+	- Estimation + routines
+
+4/ Resultats quanti pour adresser la research question
+5/ Policy scenario analysis ET comparaison (dynamique/magnitude/timing) résultats avec modèle 
+								> LIER AVEC SPECIFICITES DU MODELE
+
+
+
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
 Comm. et questions :
 
 (0) Variables observées pour Measurement equations (papier du prof) :

@@ -1,4 +1,4 @@
-[output_mat,output_table,dates_nb] = call_dbnomics('OECD/QNA/DEU.B1_GE.CQRSA.Q','OECD/QNA/DEU.B1_GE.DNBSA.Q','OECD/KEI/IR3TIB01.DEU.ST.Q','OECD/QNA/DEU.P71.CQRSA.Q');
+[output_table,~,T] = call_dbnomics('OECD/QNA/DEU.B1_GE.CQRSA.Q','OECD/QNA/DEU.B1_GE.DNBSA.Q','OECD/KEI/IR3TIB01.DEU.ST.Q','OECD/QNA/DEU.P71.CQRSA.Q');
 
 %% ================================
 % --- Observed series ---
@@ -12,12 +12,16 @@
 % remark 9 chained values 
 
 %% ================================
-idx = find(~isnan(sum(output_mat(:,2:end),2)));	% Find rows without NaN
-data = output_mat(idx,:);						% > dataset without missing values
-T = dates_nb(idx);								% > corresponding dates
-id2015 = find(T==2015);
-norm_P = data(:,3)/data(id2015,3);              % > Normalize prices to 1 in 2015
 
+% select non NaN ids
+idx 			= find(~isnan(sum(output_table(:,2:end),2))); % Find rows without NaN
+output_table 	= output_table(idx,:);                        % > dataset without missing values
+T				= T(idx);                                     % > corresponding dates
+
+
+% > Normalize prices to 1 in 2015
+id2015 = find(T==2015);
+def = output_table(:,3)/output_table(id2015,3);
 
 %% ================================
 % --- Define "observed series" ---
@@ -26,37 +30,30 @@ norm_P = data(:,3)/data(id2015,3);              % > Normalize prices to 1 in 201
 % 'estimation' part of soe.mod with 'prefilter=1'.
 
 % (1) Real output growth :
-gy_H_obs = diff(log(data(:,2)./norm_P));
+gy_H_obs  = diff(log(output_table(:,2)./(def)));
 % > Measurement equation : gy_H_obs = log(y_H/y_H(-1))
 % > Where y_h = model total output measured in goods
 
 % (2) Inflation :
-pi_H_obs = diff(log(norm_P));
+pi_H_obs  = diff(log(def));
 % > Measurement equation : log(p_H/p_H(-1))
 
 % (3) Nominal interest rate :
 % Rate data are annualized and *100
 % Remove one observation to be consistant with other variables that lose
 % one due to differentiation.
-r_H_obs	= data(2:end,4)/400;
-
+r_H_obs	= output_table(2:end,4)/400;
 
 % (4) Real Foreign exports growth :
-ex_F_obs = diff(log(data(:,5)./norm_P));
+ex_F_obs  = diff(log(output_table(:,5)./(def)));
 % > Measurement equation : ex_F_obs  = log(ex_F/ex_F(-1))
 % > Where ex_F = model H imports of Foreign products measured in goods
 
 T = T(2:end);
 
-%% ================================
-% --- Export ---
-% save into `ger_obs` the series selected observed series
-save ger_obs T gy_H_obs pi_H_obs ex_F_obs r_H_obs;
+% save into myobsGER.mat
+save myobsGER gy_H_obs T pi_H_obs r_H_obs ex_F_obs;
 
-
-%% ================================
-% --- Plots ---
-close all;
 figure;
 
 subplot(2,2,1)
@@ -65,14 +62,14 @@ xlim([min(T) max(T)]);
 title('Real output (%QoQ)')
 
 subplot(2,2,2)
-plot(T,pi_H_obs)
-xlim([min(T) max(T)]);
-title('Inflation (%QoQ)')
-
-subplot(2,2,3)
 plot(T,ex_F_obs)
 xlim([min(T) max(T)]);
 title('German imports (%QoQ)')
+
+subplot(2,2,3)
+plot(T,pi_H_obs)
+xlim([min(T) max(T)]);
+title('Inflation (%QoQ)')
 
 subplot(2,2,4)
 plot(T,r_H_obs)

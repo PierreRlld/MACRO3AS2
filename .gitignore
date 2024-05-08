@@ -1,10 +1,12 @@
+# -------------------------
 # edit :
-/test_/
-/papiers/
-/SOE_matlab/soe_standard/
-/SOE_matlab/+soe_standard/
 *_test/
 *.DS_Store
+/papiers/
+/Projet Applied Macro/
+/SOE_matlab/soe_standard_GER_merged/
+/SOE_matlab/+soe_standard_GER_merged/
+# -------------------------
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
