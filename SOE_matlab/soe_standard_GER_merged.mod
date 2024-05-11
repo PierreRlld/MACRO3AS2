@@ -18,7 +18,8 @@ var c_H r_H pic_H pi_H mc_H w_H h_H y_H p_H NFA_H lb_H ex_H
 	e_z_F e_p_F e_r_F e_x_F e_t_F e_g_F 
 	gy_H_obs gy_F_obs gc_H_obs gc_F_obs pi_H_obs pi_F_obs r_H_obs r_F_obs de_obs  drer_obs ex_H_obs ex_F_obs
 	e_e
-    y_gap_H y_gap_F c_gap_H c_gap_F pi_gap_H pi_gap_F r_gap_H r_gap_F ex_gap_H ex_gap_F ;
+    y_gap_H y_gap_F c_gap_H c_gap_F pi_gap_H pi_gap_F r_gap_H r_gap_F ex_gap_H ex_gap_F NFA_gap_H NFA_gap_F de_gap 
+    test1;
 
 varexo	eta_z_H eta_p_H eta_r_H eta_x_H eta_z_F eta_p_F eta_r_F eta_x_F eta_e eta_t_H eta_t_F  eta_g_H eta_g_F ;
 
@@ -123,7 +124,8 @@ steady_state_model;
 	varrho_F 	= mc_F - theta1*mu_F^theta2 - tau_F*(1-varphi)*sig_F*(1-mu_F)*y_F^(-varphi);
 	w_H			= varrho_H/h_H*(alpha*y_H);
 	w_F			= varrho_F/h_F*(alpha*y_F);
-	p_H			= 1; p_F		= 1;
+	p_H			= 1; 
+	p_F			= 1;
 	ex_H 		= (1-phi_F)*c_F*(1-n);
 	ex_F 		= (1-phi_H)*c_H*n;
 	chi_H		= lb_H*w_H/(h_H^sigmaH_H);
@@ -131,7 +133,8 @@ steady_state_model;
 	e_z_H	= 1; e_p_H = 1; e_r_H = 1; e_x_H = 1; e_t_H = 1; e_g_H  = 1; e_e = 1;
 	e_z_F	= 1; e_p_F = 1; e_r_F = 1; e_x_F = 1; e_t_F = 1; e_g_F  = 1;
 	gy_H_obs = 0; gy_F_obs = 0; gc_H_obs = 0; gc_F_obs = 0; pi_H_obs = 0; pi_F_obs = 0; r_H_obs = 0; r_F_obs = 0; de_obs = 0;  drer_obs = 0; ex_H_obs = 0; ex_F_obs = 0;
-    y_gap_H = 0; y_gap_F = 0; c_gap_H = 0; c_gap_F = 0; pi_gap_H = 0; pi_gap_F = 0; r_gap_H = 0; r_gap_F = 0; ex_gap_H = 0; ex_gap_F = 0;
+    y_gap_H = 0; y_gap_F = 0; c_gap_H = 0; c_gap_F = 0; pi_gap_H = 0; pi_gap_F = 0; r_gap_H = 0; r_gap_F = 0; ex_gap_H = 0; ex_gap_F = 0; NFA_gap_H=0; NFA_gap_F=0; de_gap=0;
+    test1=0;
 end;
 
 
@@ -237,12 +240,12 @@ model;
 	gc_F_obs = log(c_H/c_H(-1));
 
 	[name='measurement inflation']
-	pi_H_obs = pi_H - steady_state(pi_H);
-	pi_F_obs = pi_F - steady_state(pi_F);
+	pi_H_obs = pi_H - STEADY_STATE(pi_H);
+	pi_F_obs = pi_F - STEADY_STATE(pi_F);
 
 	[name='measurement interest rate']
-	r_H_obs  = r_H  - steady_state(r_H);
-	r_F_obs  = r_F  - steady_state(r_F);
+	r_H_obs  = r_H  - STEADY_STATE(r_H);
+	r_F_obs  = r_F  - STEADY_STATE(r_F);
 
 	[name='measurement nominal exchange rate change']
 	de_obs  = log(de);
@@ -254,44 +257,57 @@ model;
 	ex_H_obs  = log(ex_H/ex_H(-1));
 	ex_F_obs  = log(ex_F/ex_F(-1));
 
+
+	% ==============
 	[name='Output gap']
-	y_gap_H = log(y_H/steady_state(y_H));
-	y_gap_F = log(y_F/steady_state(y_F));
+	y_gap_H = log(y_H/STEADY_STATE(y_H));
+	y_gap_F = log(y_F/STEADY_STATE(y_F));
 
 	[name='Consumption gap']
-	c_gap_H = log(c_H/steady_state(c_H));
-	c_gap_F = log(c_F/steady_state(c_F));
+	c_gap_H = log(c_H/STEADY_STATE(c_H));
+	c_gap_F = log(c_F/STEADY_STATE(c_F));
 
 	[name='Inflation gap']
-	pi_gap_H = log(pi_H/steady_state(pi_H));
-	pi_gap_F = log(pi_F/steady_state(pi_F));
+	pi_gap_H = pi_H - STEADY_STATE(pi_H);
+	pi_gap_F = pi_F - STEADY_STATE(pi_F);
 
 	[name='Interest rate gap']
-	r_gap_H = log(r_H/steady_state(r_H));
-	r_gap_F = log(r_H/steady_state(r_F));
+	r_gap_H = r_H - STEADY_STATE(r_H);
+	r_gap_F = r_F - STEADY_STATE(r_F);
+
+	[name='Exchange rate gap']
+	de_gap = log(de/STEADY_STATE(de));
+
+	[name='Net Foreign Asset gap']
+	NFA_gap_H = log(NFA_H/STEADY_STATE(NFA_H));
+	NFA_gap_F = log(NFA_F/STEADY_STATE(NFA_F));
+
+	test1 = n*NFA_gap_H + (1-n)*NFA_gap_F;
+	%test2 = n*NFA_H + (1-n)*NFA_F; > OK = 0
+	%test3 = n*STEADY_STATE(NFA_H) + (1-n)*STEADY_STATE(NFA_F); > OK = 0
 
 	[name='Export gap']
-	ex_gap_H = log(ex_H/steady_state(ex_H));
+	ex_gap_H = log(ex_H/STEADY_STATE(ex_H));
 
 	[name='Import gap']
-	ex_gap_F = log(ex_F/steady_state(ex_F));
+	ex_gap_F = log(ex_F/STEADY_STATE(ex_F));
 	
 	% ==============
-	%% Stochastic processes
-	[name='Country specific shocks']
-	log(e_z_H) = rho_z_H*log(e_z_H(-1)) + eta_z_H;
-	log(e_p_H) = rho_p_H*log(e_p_H(-1)) + eta_p_H;
-	log(e_r_H) = rho_r_H*log(e_r_H(-1)) + eta_r_H;
-	log(e_x_H) = rho_x_H*log(e_x_H(-1)) + eta_x_H;
-	log(e_g_H) = rho_x_H*log(e_g_H(-1)) + eta_g_H;
-	log(e_t_H) = rho_t_H*log(e_t_H(-1)) + eta_t_H;
-	log(e_z_F) = rho_z_F*log(e_z_F(-1)) + eta_z_F;
-	log(e_p_F) = rho_p_F*log(e_p_F(-1)) + eta_p_F;
-	log(e_r_F) = rho_r_F*log(e_r_F(-1)) + eta_r_F;
-	log(e_x_F) = rho_x_F*log(e_x_F(-1)) + eta_x_F;
-	log(e_g_F) = rho_g_F*log(e_g_F(-1)) + eta_g_F;
-	log(e_t_F) = rho_t_F*log(e_t_F(-1)) + eta_t_F;
-	log(e_e)   = rho_e*log(e_e(-1)) + eta_e;
+	%% Stochastic processes for exogenous shocks
+	[name='Country specific exogenous shocks']
+	log(e_z_H) = rho_z_H*log(e_z_H(-1)) + eta_z_H;  % technology shock H
+	log(e_p_H) = rho_p_H*log(e_p_H(-1)) + eta_p_H;  % cost push shock H
+	log(e_r_H) = rho_r_H*log(e_r_H(-1)) + eta_r_H;  % interest rate shock H
+	log(e_x_H) = rho_x_H*log(e_x_H(-1)) + eta_x_H;  % (!) import shock H
+	log(e_g_H) = rho_x_H*log(e_g_H(-1)) + eta_g_H;  % government spending H
+	log(e_t_H) = rho_t_H*log(e_t_H(-1)) + eta_t_H;  % carbon tax H
+	log(e_z_F) = rho_z_F*log(e_z_F(-1)) + eta_z_F;  % technology shock F
+	log(e_p_F) = rho_p_F*log(e_p_F(-1)) + eta_p_F;  % cost push shock F
+	log(e_r_F) = rho_r_F*log(e_r_F(-1)) + eta_r_F;  % interest rate shock F
+	log(e_x_F) = rho_x_F*log(e_x_F(-1)) + eta_x_F;  % (!) import shock F
+	log(e_g_F) = rho_g_F*log(e_g_F(-1)) + eta_g_F;  % government spending F
+	log(e_t_F) = rho_t_F*log(e_t_F(-1)) + eta_t_F;  % carbon tax F
+	log(e_e)   = rho_e*log(e_e(-1)) + eta_e;        % exchange rate shock
 	
 end;
 
@@ -387,6 +403,8 @@ forecast=8						% forecasts horizon
 % 6. GET RESULTS
 %=====================================================================
 
+% strmatch('NFA_H',M_.endo_names,'exact')
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % load estimated parameters
 fn = fieldnames(oo_.posterior_mean.parameters);
@@ -402,10 +420,11 @@ end
 
 
 % --------
-stoch_simul(irf=20,conditional_variance_decomposition=[1,4,8,12,100],order=1) r_H r_gap_H r_gap_F y_gap_H y_gap_F c_gap_H c_gap_F pi_gap_H pi_gap_F ex_gap_H ex_gap_F r_H_obs gy_H_obs pi_H_obs ex_F_obs;
-% Variance Decomposition : after 1 quarter, 1 year, 2 years, 3 years and long-term
+stoch_simul(irf=20,conditional_variance_decomposition=[1,2,3,4,5,6,8,12],order=1) e_r_H r_gap_H de_gap   c_gap_H y_gap_H pi_gap_H   ex_gap_F pi_gap_F r_gap_F   ex_gap_H;
+%stoch_simul(irf=20,conditional_variance_decomposition=[1,2,3,4,5,6,8,12],order=1) ex_gap_H r_gap_H de_gap   c_gap_H y_gap_H pi_gap_H   ex_gap_F pi_gap_F r_gap_F;
+% Variance Decomposition : after 1 2 3 quarters, 1 year... 'variance decompositon' = LT
 % période plus longue = augmenter ce sur quoi on conditionne la variance V(x|...)
-shock_decomposition y_gap_H r_H_obs pi_H_obs ex_F_obs;
+shock_decomposition de pi_H_obs ex_F_obs ex_gap_H;
 % --------
 
 load(options_.datafile);
@@ -416,8 +435,6 @@ else
 end
 Tfreq = mean(diff(Tvec));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 
 %%%%%%%%%%%%%%%%% COUNTERFACTUAL EXERCISES %%%%%%%%%%%%%%%%%%
@@ -433,29 +450,28 @@ end
 % ------
 %>>> Simulate BASELINE scenario
 % SOLVE DECISION RULEs
-[oo_.dr, info, M_.params] = resol(0, M_, options_, oo_.dr, oo_.dr.ys, oo_.exo_steady_state, oo_.exo_det_steady_state);
+%[oo_.dr, info, M_.params] = resol(0, M_, options_, oo_.dr, oo_.dr.ys, oo_.exo_steady_state, oo_.exo_det_steady_state);
 % SIMULATE the model
-y_            = simult_(M_,options_,oo_.dr.ys,oo_.dr,ee_mat,options_.order);
+%y_            = simult_(M_,options_,oo_.dr.ys,oo_.dr,ee_mat,options_.order);
 
 % ------
 %>>> Simulate ALTERNATIVE scenario
 % make a copy
-Mx  = M_;
-oox = oo_;
+%Mx  = M_;
+%oox = oo_;
 % (!) CHANGE PARAMETER (!)
-Mx.params(strcmp('phi_y',M_.param_names)) = .25;
+%Mx.params(strcmp('phi_pi',M_.param_names)) = 2;
 % solve new decision rule
-[oox.dr, info, Mx.params] = resol(0, Mx, options_, oox.dr, oox.dr.ys, oox.exo_steady_state, oox.exo_det_steady_state);
-% simulate dovish central bank
-ydov            = simult_(Mx,options_,oox.dr.ys,oox.dr,ee_mat,options_.order);
+%[oox.dr, info, Mx.params] = resol(0, Mx, options_, oox.dr, oox.dr.ys, oox.exo_steady_state, oox.exo_det_steady_state);
+% simulate hawkish central bank (take phi_y of the US from Del Negro, Schorfheide (2012)
+%ypolicy            = simult_(Mx,options_,oox.dr.ys,oox.dr,ee_mat,options_.order);
 
 % ------
 % Plot results
-var_names={'y_gap_H','c_gap_H','pi_gap_H','ex_gap_F','ex_gap_H','r_gap_H'};
-Ty = [T(1)-Tfreq;T];
-draw_tables(var_names,M_,Ty,[],{'Estimated','Dovish'},y_,ydov)
+%var_names={'r_H','y_H','c_H','pi_H','ex_F','ex_H'};
+%Ty = [T(1)-Tfreq;T];
+%draw_tables(var_names,M_,Ty,[],{'Estimated','Hawkish'},y_,ypolicy)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -468,6 +484,7 @@ for ix=1:size(fx,1)
 	if ix==1; ee_mat2 = zeros(length(shock_mat),M_.exo_nbr); end;
 	ee_mat2(:,strmatch(fx{ix},M_.exo_names,'exact')) = shock_mat;
 end
+
 % add mean-wise forecast with zero mean shocks
 ee_mat2 	= [ee_mat;zeros(Thorizon,M_.exo_nbr)];
 Tvec2 		= Tvec(1):Tfreq:(Tvec(1)+size(ee_mat2,1)*Tfreq);
@@ -485,11 +502,16 @@ y_            = simult_(M_,options_,oo_.dr.ys,oo_.dr,ee_mat2,options_.order);
 ee_matx = ee_mat2;
 % select monetary shock
 idx = strmatch('eta_r_H',M_.exo_names,'exact');
-ee_matx(end-Thorizon+1,idx) = -0.05;% add a 50 percent increase in carbon price 
+ee_matx(end-Thorizon+1,idx) = -0.01;
 % simulate the model
 y_monetary           = simult_(M_,options_,oo_.dr.ys,oo_.dr,ee_matx,options_.order);
 
 % draw result
-var_names={'y_gap_H','c_gap_H','pi_gap_H','ex_gap_F','ex_gap_H','r_gap_H'};
+var_plot = {}
+
+var_names={'r_H','y_H','c_H','pi_H','ex_F','ex_H'};
 Ty = [T(1)-Tfreq;T];
+
+draw_tables(var_plot,M_,Tvec2,[2010 2024],{'Estimated'},y_)
+
 draw_tables(var_names,M_,Tvec2,[2023 Tvec2(end)],{'Estimated','Monetary'},y_,y_monetary)

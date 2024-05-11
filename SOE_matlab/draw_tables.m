@@ -16,7 +16,7 @@ for ix = 1:n
        themat = varargin{iy};
        plot(T,themat(idy,:),'linewidth',1)
     end
-    legend(legd,'Location','northwest')
+    legend(legd,'Location','northeast')
     title(M_.endo_names_tex{idy})
     grid on;
     hold off;

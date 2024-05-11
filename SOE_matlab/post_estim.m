@@ -1,3 +1,94 @@
+
+%%%%%%%%%%%%%%%%% COUNTERFACTUAL EXERCISES %%%%%%%%%%%%%%%%%%
+% stack estimated values for exogenous shocks in a matrix
+fx = fieldnames(oo_.SmoothedShocks);
+for ix=1:size(fx,1)
+	% extract the correct (model-based) series from oo_.SmoothedShocks
+	shock_mat = eval(['oo_.SmoothedShocks.' fx{ix}]);
+	if ix==1; ee_mat = zeros(length(shock_mat),M_.exo_nbr); end;
+	ee_mat(:,strmatch(fx{ix},M_.exo_names,'exact')) = shock_mat;
+end
+
+% ------
+%>>> Simulate BASELINE scenario
+% SOLVE DECISION RULEs
+[oo_.dr, info, M_.params] = resol(0, M_, options_, oo_.dr, oo_.dr.ys, oo_.exo_steady_state, oo_.exo_det_steady_state);
+% SIMULATE the model
+y_            = simult_(M_,options_,oo_.dr.ys,oo_.dr,ee_mat,options_.order);
+
+% ------
+%>>> Simulate ALTERNATIVE scenario
+% make a copy
+Mx  = M_;
+oox = oo_;
+% (!) CHANGE PARAMETER (!)
+Mx.params(strcmp('phi_y',M_.param_names)) = .25;
+% solve new decision rule
+[oox.dr, info, Mx.params] = resol(0, Mx, options_, oox.dr, oox.dr.ys, oox.exo_steady_state, oox.exo_det_steady_state);
+% simulate dovish central bank
+ydov            = simult_(Mx,options_,oox.dr.ys,oox.dr,ee_mat,options_.order);
+
+% ------
+% Plot results
+var_names={'r_H','y_H','c_H','pi_H','ex_F','ex_H'};
+Ty = [T(1)-Tfreq;T];
+draw_tables(var_names,M_,Ty,[],{'Estimated','Dovish'},y_,ydov)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%% FORECAST UNDER ALTERNATIVE POLICY %%%%%%%%%%%%%%%%%%
+Thorizon 	= 12; % number of quarters for simulation
+% Built baseline forecast
+fx = fieldnames(oo_.SmoothedShocks);
+for ix=1:size(fx,1)
+	shock_mat = eval(['oo_.SmoothedShocks.' fx{ix}]);
+	if ix==1; ee_mat2 = zeros(length(shock_mat),M_.exo_nbr); end;
+	ee_mat2(:,strmatch(fx{ix},M_.exo_names,'exact')) = shock_mat;
+end
+
+% add mean-wise forecast with zero mean shocks
+ee_mat2 	= [ee_mat;zeros(Thorizon,M_.exo_nbr)];
+Tvec2 		= Tvec(1):Tfreq:(Tvec(1)+size(ee_mat2,1)*Tfreq);
+
+% ------
+%>>> Simulate ALTERNATIVE scenario
+% SOLVE DECISION RULEs
+[oo_.dr, info, M_.params] = resol(0, M_, options_, oo_.dr, oo_.dr.ys, oo_.exo_steady_state, oo_.exo_det_steady_state);
+% SIMULATE the model
+y_            = simult_(M_,options_,oo_.dr.ys,oo_.dr,ee_mat2,options_.order);
+
+
+%%% Add a negative monetary policy shock
+% make a copy of shock matrix
+ee_matx = ee_mat2;
+% select monetary shock
+idx = strmatch('eta_r_H',M_.exo_names,'exact');
+ee_matx(end-Thorizon+1,idx) = -0.05;
+% simulate the model
+y_monetary           = simult_(M_,options_,oo_.dr.ys,oo_.dr,ee_matx,options_.order);
+
+% draw result
+var_plot = {'r_H','r_H_obs','ex_F','ex_F_obs','ex_H','y_H','c_H','pi_H','pi_F'}
+var_names={'r_H','y_H','c_H','pi_H','ex_F','ex_H'};
+Ty = [T(1)-Tfreq;T];
+
+draw_tables(var_plot,M_,Tvec2,[2019 2024],{'Estimated'},y_)
+
+draw_tables(var_names,M_,Tvec2,[2023 Tvec2(end)],{'Estimated','Monetary'},y_,y_monetary)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
 %%%%%%%%%%%%%%%%% END OF SAMPLE FORECASTING - PLOTS
 tprior = 20; % period before forecasts to plot
 Tvec2 = Tvec(end) + (0:(options_.forecast))*Tfreq;

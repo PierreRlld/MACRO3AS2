@@ -66,3 +66,60 @@ Comm. et questions :
 - https://forum.dynare.org/t/choosing-an-appropriate-standard-deviation-for-prior/4331
 
 > resol computes the decision rules. If you change parameters, you of course need to recompute the decision rules. If you just run a different simulation with different shocks, then you don’t need to invoke it again.
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%% COUNTERFACTUAL EXERCISES %%%%%%%%%%%%%%%%%%
+% stack estimated values for exogenous shocks in a matrix
+fx = fieldnames(oo_.SmoothedShocks);
+for ix=1:size(fx,1)
+	% extract the correct (model-based) series from oo_.SmoothedShocks
+	shock_mat = eval(['oo_.SmoothedShocks.' fx{ix}]);
+	if ix==1; ee_mat = zeros(length(shock_mat),M_.exo_nbr); end;
+	ee_mat(:,strmatch(fx{ix},M_.exo_names,'exact')) = shock_mat;
+end
+
+% ------
+%>>> Simulate BASELINE scenario
+% SOLVE DECISION RULEs
+[oo_.dr, info, M_.params] = resol(0, M_, options_, oo_.dr, oo_.dr.ys, oo_.exo_steady_state, oo_.exo_det_steady_state);
+% SIMULATE the model
+y_            = simult_(M_,options_,oo_.dr.ys,oo_.dr,ee_mat,options_.order);
+
+% ------
+%>>> Simulate ALTERNATIVE scenario
+% make a copy
+Mx  = M_;
+oox = oo_;
+% (!) CHANGE PARAMETER (!)
+Mx.params(strcmp('phi_pi',M_.param_names)) = 2;
+% solve new decision rule
+[oox.dr, info, Mx.params] = resol(0, Mx, options_, oox.dr, oox.dr.ys, oox.exo_steady_state, oox.exo_det_steady_state);
+% simulate hawkish central bank (take phi_y of the US from Del Negro, Schorfheide (2012)
+ypolicy            = simult_(Mx,options_,oox.dr.ys,oox.dr,ee_mat,options_.order);
+
+% ------
+% Plot results
+var_names={'r_H','y_H','c_H','pi_H','ex_F','ex_H'};
+Ty = [T(1)-Tfreq;T];
+draw_tables(var_names,M_,Ty,[],{'Estimated','Hawkish'},y_,ypolicy)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
