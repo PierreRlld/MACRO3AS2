@@ -1,3 +1,29 @@
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
+- https://michalandrle.weebly.com/obsdecomp.html
+- IRF MCMC : https://forum.dynare.org/t/irfs-after-estimation-of-a-dsge-model/17031
+- https://forum.dynare.org/t/choosing-an-appropriate-standard-deviation-for-prior/4331
+- https://forum.dynare.org/t/question-about-understanding-irfs-in-dynare/10622/4
+- https://archives.dynare.org/manual/index_27.html
+- chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://sites.nd.edu/esims/files/2023/05/using_dynare_sp17.pdf
+- chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://www.ecb.europa.eu/pub/pdf/scpwps/ecbwp140.pdf
+- https://sites.nd.edu/esims/matlab-and-dynare-codes/
+- https://forum.dynare.org/t/parameters-in-bayesian-estimation/25325
+- https://forum.dynare.org/t/choosing-an-appropriate-standard-deviation-for-prior/4331
+
+
+
+> resol computes the decision rules. If you change parameters, you of course need to recompute the decision rules. If you just run a different simulation with different shocks, then you don’t need to invoke it again.
+
+
+
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
+
 0/ Abstract: summarize main results + briefly present the economic problem and the data.
 
 1/ Motivate our research question and model selection. Peu être expliquer rapidement les principaux blocs du modèle.
@@ -53,21 +79,6 @@ Comm. et questions :
 (2) Partie 5. Estimation - Priors selection
 	- Choix de quels paramètres estimer (chocs et paramètres plus structurels)
 	- On a seulement 3 variables observées + aucune variable spécifique à l'éco US (hors export vers allemagne) donc probablement difficile d'extraire des infos utiles pour inférer les paramètres US... On reste sur de la calibration du coup..?
-
-
-/!\ Trouve pas SS quand j'ai 2 public spending ratio différents 
-/!\ Trouve pas SS quand je change carbon tax value et intensity
-
-----------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------
-
-- IRF MCMC : https://forum.dynare.org/t/irfs-after-estimation-of-a-dsge-model/17031
-- https://forum.dynare.org/t/choosing-an-appropriate-standard-deviation-for-prior/4331
-
-> resol computes the decision rules. If you change parameters, you of course need to recompute the decision rules. If you just run a different simulation with different shocks, then you don’t need to invoke it again.
-
-
 
 
 
